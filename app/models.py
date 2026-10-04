@@ -197,23 +197,33 @@ class Subscription(Base):
         default=datetime.utcnow
     )
 
+    # Relationship with User
     user = relationship(
         "User",
         back_populates="subscriptions"
     )
 
+    # Relationship with Subscription Plan
     plan = relationship(
         "SubscriptionPlan",
         back_populates="subscriptions"
     )
 
+    # Relationship with Solar Project
     project = relationship(
         "SolarProject",
         back_populates="subscriptions"
     )
 
+    # Relationship with Energy Allocation
     allocations = relationship(
         "EnergyAllocation",
+        back_populates="subscription"
+    )
+
+    # Relationship with Payment
+    payments = relationship(
+        "Payment",
         back_populates="subscription"
     )
 
@@ -253,11 +263,13 @@ class EnergyGeneration(Base):
         default=datetime.utcnow
     )
 
+    # Relationship with Solar Project
     project = relationship(
         "SolarProject",
         back_populates="energy_generations"
     )
 
+    # Relationship with Energy Allocation
     allocations = relationship(
         "EnergyAllocation",
         back_populates="generation"
@@ -310,12 +322,77 @@ class EnergyAllocation(Base):
         nullable=True
     )
 
+    # Relationship with Energy Generation
     generation = relationship(
         "EnergyGeneration",
         back_populates="allocations"
     )
 
+    # Relationship with Subscription
     subscription = relationship(
         "Subscription",
         back_populates="allocations"
+    )
+
+
+# =========================================================
+# PAYMENT
+# =========================================================
+
+class Payment(Base):
+
+    __tablename__ = "payments"
+
+    id = Column(
+        Integer,
+        primary_key=True,
+        index=True
+    )
+
+    # Subscription for which payment was made
+    subscription_id = Column(
+        Integer,
+        ForeignKey("subscriptions.id"),
+        nullable=False
+    )
+
+    # Payment amount in INR
+    amount = Column(
+        Float,
+        nullable=False
+    )
+
+    # Currency used for payment
+    currency = Column(
+        String(10),
+        default="INR"
+    )
+
+    # Stripe Checkout Session ID
+    stripe_session_id = Column(
+        String(255),
+        unique=True,
+        nullable=False
+    )
+
+    # Payment status
+    # Possible values:
+    # Pending
+    # Paid
+    # Failed
+    payment_status = Column(
+        String(50),
+        default="Pending"
+    )
+
+    # Payment creation time
+    created_at = Column(
+        DateTime,
+        default=datetime.utcnow
+    )
+
+    # Relationship with Subscription
+    subscription = relationship(
+        "Subscription",
+        back_populates="payments"
     )

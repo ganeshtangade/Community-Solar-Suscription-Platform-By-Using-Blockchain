@@ -228,3 +228,28 @@ class EnergyAllocationResponse(BaseModel):
     model_config = ConfigDict(
         from_attributes=True
     )
+
+
+# =========================================================
+# PAYMENT SCHEMAS
+# =========================================================
+
+class PaymentResponse(BaseModel):
+
+    id: int
+
+    subscription_id: int
+
+    amount: float
+
+    currency: str
+
+    stripe_session_id: str
+
+    payment_status: str
+
+    created_at: datetime
+
+    model_config = ConfigDict(
+        from_attributes=True
+    )

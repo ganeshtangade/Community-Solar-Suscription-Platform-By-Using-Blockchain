@@ -10,10 +10,11 @@ __pycache__/
 # Environment variables
 .env
 
+
 # IDE
 .vscode/
 .idea/
 
 # OS files
 .DS_Store
-Thumbs.db
+Thumbs.dbmn

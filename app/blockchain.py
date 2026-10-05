@@ -26,7 +26,25 @@ PRIVATE_KEY = os.getenv(
 
 
 # =========================================================
-# CONNECT TO GANACHE
+# VALIDATE CONFIGURATION
+# =========================================================
+
+if not BLOCKCHAIN_RPC_URL:
+
+    raise ValueError(
+        "BLOCKCHAIN_RPC_URL is not configured"
+    )
+
+
+if not CONTRACT_ADDRESS:
+
+    raise ValueError(
+        "BLOCKCHAIN_CONTRACT_ADDRESS is not configured"
+    )
+
+
+# =========================================================
+# CONNECT TO BLOCKCHAIN
 # =========================================================
 
 w3 = Web3(
@@ -45,6 +63,7 @@ BASE_DIR = os.path.dirname(
         os.path.abspath(__file__)
     )
 )
+
 
 ABI_PATH = os.path.join(
     BASE_DIR,
@@ -114,15 +133,22 @@ def record_energy_allocation(
         )
 
 
-    # Get wallet address from private key
+    # -----------------------------------------------------
+    # GET ACCOUNT
+    # -----------------------------------------------------
+
     account = w3.eth.account.from_key(
         PRIVATE_KEY
     )
 
+
     wallet_address = account.address
 
 
-    # Convert kWh to Wh
+    # -----------------------------------------------------
+    # CONVERT kWh TO Wh
+    # -----------------------------------------------------
+
     energy_wh = int(
         round(
             allocated_kwh * 1000
@@ -130,13 +156,19 @@ def record_energy_allocation(
     )
 
 
-    # Get current nonce
+    # -----------------------------------------------------
+    # GET NONCE
+    # -----------------------------------------------------
+
     nonce = w3.eth.get_transaction_count(
         wallet_address
     )
 
 
-    # Build transaction
+    # -----------------------------------------------------
+    # BUILD TRANSACTION
+    # -----------------------------------------------------
+
     transaction = contract.functions.recordAllocation(
 
         allocation_id,
@@ -156,35 +188,44 @@ def record_energy_allocation(
         "gas": 300000,
 
         "gasPrice": w3.eth.gas_price
-
     })
 
 
-    # Sign transaction
+    # -----------------------------------------------------
+    # SIGN TRANSACTION
+    # -----------------------------------------------------
+
     signed_transaction = w3.eth.account.sign_transaction(
 
         transaction,
 
         private_key=PRIVATE_KEY
-
     )
 
 
-    # Send transaction
+    # -----------------------------------------------------
+    # SEND TRANSACTION
+    # -----------------------------------------------------
+
     transaction_hash = w3.eth.send_raw_transaction(
 
         signed_transaction.raw_transaction
-
     )
 
 
-    # Wait for blockchain confirmation
+    # -----------------------------------------------------
+    # WAIT FOR CONFIRMATION
+    # -----------------------------------------------------
+
     receipt = w3.eth.wait_for_transaction_receipt(
 
         transaction_hash
-
     )
 
+
+    # -----------------------------------------------------
+    # RETURN RESULT
+    # -----------------------------------------------------
 
     return {
 
@@ -196,5 +237,4 @@ def record_energy_allocation(
 
         "status":
             receipt["status"]
-
     }

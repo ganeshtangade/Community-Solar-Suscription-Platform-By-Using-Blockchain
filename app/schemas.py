@@ -14,6 +14,10 @@ class UserCreate(BaseModel):
 
     email: str
 
+    phone: str
+
+    address: str
+
     password: str
 
 
@@ -22,6 +26,10 @@ class UserUpdate(BaseModel):
     name: Optional[str] = None
 
     email: Optional[str] = None
+
+    phone: Optional[str] = None
+
+    address: Optional[str] = None
 
     password: Optional[str] = None
 
@@ -33,6 +41,10 @@ class UserResponse(BaseModel):
     name: str
 
     email: str
+
+    phone: str
+
+    address: str
 
     model_config = ConfigDict(
         from_attributes=True
@@ -64,7 +76,7 @@ class SubscriptionPlanResponse(BaseModel):
 
     energy_share: float
 
-    description: Optional[str]
+    description: Optional[str] = None
 
     model_config = ConfigDict(
         from_attributes=True

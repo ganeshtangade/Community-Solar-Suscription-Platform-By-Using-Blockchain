@@ -1388,3 +1388,21 @@ def payment_cancel():
         "message":
             "Payment was cancelled."
     }
+
+
+@app.post("/login", response_model=schemas.UserResponse)
+def login(
+    data: schemas.LoginRequest,
+    db: Session = Depends(get_db)
+):
+
+    user = crud.get_user_by_email(db, data.email)
+
+    if not user or user.password != data.password:
+
+        raise HTTPException(
+            status_code=401,
+            detail="Invalid email or password"
+        )
+
+    return user
